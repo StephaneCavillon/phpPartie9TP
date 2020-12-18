@@ -2,65 +2,69 @@
     
     if(!empty($_GET)){
         // récupération des variables
-        $selectedmonth = (int)$_GET['month'];
-        $selectedyear = (int)$_GET['year'];
+        $selected_month = (int)$_GET['month'];
+        $selected_year = (int)$_GET['year'];
 
     } else{
         // renvoi le mois en chiffre sans le 0 initial
-        $selectedmonth = date('n');
+        $selected_month = date('n');
         // renvoi l'année en 4 chiffres
-        $selectedyear = date('Y');    
+        $selected_year = date('Y');    
     }
 
     // Création des fonctions
     //récupération du nombre de jours du mois
-    $nb_days_in_selectedmonth = cal_days_in_month(CAL_GREGORIAN, $selectedmonth, $selectedyear);
+    $nb_days_in_selected_month = cal_days_in_month(CAL_GREGORIAN, $selected_month, $selected_year);
 
     // récupération du premier jour du mois en chiffre pour le réutiliser ensuite potentiellement regarder mktime
     // strtotime est au format YY/mm/dd (format américain année/mois/jour)
-    $first_day_of_selectedmonth = date('N', strtotime($selectedyear.'/'. $selectedmonth .'/'. 1));
+    $first_day_of_selected_month = date('N', strtotime($selected_year.'/'. $selected_month .'/'. 1));
 
     // récupération du dernier jour du mois en chiffre pour case vide fin de tableau
-    $last_day_of_selectedmonth = date('N', strtotime($selectedyear.'/'. $selectedmonth .'/'. $nb_days_in_selectedmonth));
+    $last_day_of_selected_month = date('N', strtotime($selected_year.'/'. $selected_month .'/'. $nb_days_in_selected_month));
 
 
     // création de case vide début calendrier
-    function create_start_cells(
-        $empty_cells=1;
+    // il faut mettre la variable en paramètre pour y avoir accès à l'intérieur de la fonction
+    function create_start_cells($first_day_of_selected_month){
+        $empty_cells = 1;
 
-        while($empty_cells < $first_day_of_selectedmonth){
+        while($empty_cells < $first_day_of_selected_month){
             // on créé une cellule vide
             echo '<td class="bg-secondary"></td>';
 
             $empty_cells++;
         }
-    )
 
-    // création des cases du mois
-    function create_calendar_cells(
+        return $empty_cells;
+
+    }
+
+    // création des cases du mois en cours
+    function create_calendar_cells($empty_cells_start, $nb_days_in_selected_month){
         $days = 1;
 
-        for($days; $days <= $nb_days_in_selectedmonth; $days++){
+        for($days; $days <= $nb_days_in_selected_month; $days++){
             // ajout de la condition pour les retours à la ligne en fin de semaine
-            if(($empty_cells + $days) %7 ==0 || $days % 7 == 0 ){
+            if(($empty_cells_start + $days) % 7 ==0 || $days % 7 == 0 ){
                 echo '<td>' . $days . '</td> </tr> <tr>';
             } else{
                 echo '<td>' . $days . '</td>';
             }
         }
-    )
+    }
     
     // création des case vide de fin de mois
-    function create_end_cells(
+    function create_end_cells($last_day_of_selected_month){
         // je prend le numero de la semaine du dernier jours du mois +1
-        $empty_cells = $last_day_of_selectedmonth + 1;
+        $empty_cells = $last_day_of_selected_month + 1;
 
         while($empty_cells <= 7){
             echo '<td class="bg-secondary"></td>';
 
             $empty_cells++;
         }
-    )
+    }
     
 ?>
 
@@ -97,7 +101,7 @@
         </select>
         <label for="year">Année :</label>
         <select name="year" id="year">
-            <option value=""></option>            
+            <option value="2020">2020</option>            
         </select>
         <!-- possibilité d'enlever le bouton en mettant un listener JS -->
         <button type="submit" class="btn btn-link" data-mdb-ripple-color="dark">Afficher</button>
@@ -118,12 +122,14 @@
             </tr>
         </thead>
         <tbody>
+            <tr>
             <?php
-                if()
-
+                $empty_cells_start = create_start_cells($first_day_of_selected_month);
+                create_calendar_cells($empty_cells_start, $nb_days_in_selected_month);
+                create_end_cells($last_day_of_selected_month);
             ?>
 
-            <tr>
+            <!-- <tr>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -176,7 +182,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-            </tr>
+            </tr> -->
         </tbody>
 
 
