@@ -44,7 +44,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
     <!-- MDB -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/2.2.1/mdb.min.css" rel="stylesheet"/>
-    <title>PHP - partie 9 - TP</title>
+    <title>PHP - partie 9 - TP - méthode boucle dans le HTML</title>
 </head>
 <body class="container">
     <!--création des champs de select-->
