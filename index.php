@@ -1,5 +1,5 @@
 <?php
-    
+    setlocale(LC_TIME, 'fra.UTF-8');
     if(!empty($_GET)){
         // récupération des variables
         $selected_month = (int)$_GET['month'];
@@ -12,7 +12,6 @@
         $selected_year = date('Y');    
     }
 
-    // Création des fonctions
     //récupération du nombre de jours du mois
     $nb_days_in_selected_month = cal_days_in_month(CAL_GREGORIAN, $selected_month, $selected_year);
 
@@ -23,49 +22,15 @@
     // récupération du dernier jour du mois en chiffre pour case vide fin de tableau
     $last_day_of_selected_month = date('N', strtotime($selected_year.'/'. $selected_month .'/'. $nb_days_in_selected_month));
 
+    //nombre de case vide au début du tableau
+    $empty_start_cells = $first_day_of_selected_month - 1;
 
-    // création de case vide début calendrier
-    // il faut mettre la variable en paramètre pour y avoir accès à l'intérieur de la fonction
-    function create_start_cells($first_day_of_selected_month){
-        $empty_cells = 1;
+    //nmobre de case vide en fin de tableau
+    $empty_end_cells = $last_day_of_selected_month + 1;
 
-        while($empty_cells < $first_day_of_selected_month){
-            // on créé une cellule vide
-            echo '<td class="bg-secondary"></td>';
+    $nb_cells_in_line = 1;
 
-            $empty_cells++;
-        }
-
-        return $empty_cells;
-
-    }
-
-    // création des cases du mois en cours
-    function create_calendar_cells($empty_cells_start, $nb_days_in_selected_month){
-        $days = 1;
-
-        for($days; $days <= $nb_days_in_selected_month; $days++){
-            // ajout de la condition pour les retours à la ligne en fin de semaine
-            if(($empty_cells_start + $days) % 7 ==0 || $days % 7 == 0 ){
-                echo '<td>' . $days . '</td> </tr> <tr>';
-            } else{
-                echo '<td>' . $days . '</td>';
-            }
-        }
-    }
-    
-    // création des case vide de fin de mois
-    function create_end_cells($last_day_of_selected_month){
-        // je prend le numero de la semaine du dernier jours du mois +1
-        $empty_cells = $last_day_of_selected_month + 1;
-
-        while($empty_cells <= 7){
-            echo '<td class="bg-secondary"></td>';
-
-            $empty_cells++;
-        }
-    }
-    
+     
 ?>
 
 <!DOCTYPE html>
@@ -81,29 +46,45 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/2.2.1/mdb.min.css" rel="stylesheet"/>
     <title>PHP - partie 9 - TP</title>
 </head>
-<body>
+<body class="container">
     <!--création des champs de select-->
     <form action="" method="get" class="my-5">
         <label for="month">Mois :</label>
         <select name="month" id="month">
-            <option value="1">Janvier</option>
-            <option value="2">Février</option>
-            <option value="3">Mars</option>
-            <option value="4">Avril</option>
-            <option value="5">Mai</option>
-            <option value="6">Juin</option>
-            <option value="7">Juillet</option>
-            <option value="8">Août</option>
-            <option value="9">Septembre</option>
-            <option value="10">Octobre</option>
-            <option value="11">Novembre</option>
-            <option value="12">Décembre</option>    
+        <?php
+            for($i=1; $i<=12; $i++){
+                if($i == $selected_month){
+        ?>
+                    <option value="<?=$i?>" selected><?=strftime('%B', strtotime('2000/'. $i .'/1'));?></option>
+        <?php
+                } else{
+        ?>
+
+                    <option value="<?=$i?>"><?=strftime('%B', strtotime('2000/'. $i .'/1'));?></option>
+
+        <?php
+                }
+            }
+
+        ?>
         </select>
         <label for="year">Année :</label>
         <select name="year" id="year">
-            <option value="2020">2020</option>            
+        <?php
+            for($i=-10; $i <= 10; $i++){
+                // La condition est vrai uniquement pour $i=0
+                if($i + $selected_year == $selected_year){
+        ?>
+                    <option value="<?=$i + $selected_year?>" selected><?=$i + $selected_year?></option>
+        <?php
+                }else{
+        ?>
+                    <option value="<?=$i + $selected_year?>"><?=$i + $selected_year?></option>
+        <?php        
+                }
+            }
+        ?>
         </select>
-        <!-- possibilité d'enlever le bouton en mettant un listener JS -->
         <button type="submit" class="btn btn-link" data-mdb-ripple-color="dark">Afficher</button>
     </form>
 
@@ -124,71 +105,50 @@
         <tbody>
             <tr>
             <?php
-                $empty_cells_start = create_start_cells($first_day_of_selected_month);
-                create_calendar_cells($empty_cells_start, $nb_days_in_selected_month);
-                create_end_cells($last_day_of_selected_month);
+
+            // Création des cases vides du calendrier
+            for($i=0; $i < $empty_start_cells; $i++){
             ?>
+                 <!-- on créé une cellule vide -->
+                <td class="bg-secondary"></td>
+            <?php 
+                $nb_cells_in_line++;
+            }
+            // Fin création des cases vides
+            
+            // Début de création des cases du mois en cours
+            for($days=1; $days <= $nb_days_in_selected_month; $days++){
+                // ajout de la condition pour les retours à la ligne en fin de semaine
+                if($nb_cells_in_line % 7 == 0){
+            ?>
+                    <td> <?= $days; ?> </td> 
+                </tr>
+                <tr>
+            <?php
+                    $nb_cells_in_line++;
 
-            <!-- <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                } else{
+            ?>
+                    <td><?= $days; ?></td>
+            <?php
+                    $nb_cells_in_line++;
+                }                
+            }
+            // Fin de création des cases du mois en cours
+
+            //début création des cases vides fin de mois
+            for($empty_end_cells; $empty_end_cells <= 7; $empty_end_cells++){
+
+            ?>
+                <td class="bg-secondary"></td>
+            <?php
+            }
+            //fin création des cases vides fin de mois
+    
+            ?>
             </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr> -->
         </tbody>
-
-
     </table>
-
-
     <!-- MDB -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/2.2.1/mdb.min.js"></script>
 </body>
