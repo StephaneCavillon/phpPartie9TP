@@ -22,15 +22,22 @@
     // récupération du dernier jour du mois en chiffre pour case vide fin de tableau
     $last_day_of_selected_month = date('N', strtotime($selected_year.'/'. $selected_month .'/'. $nb_days_in_selected_month));
 
-    //nombre de case vide au début du tableau
-    $empty_start_cells = $first_day_of_selected_month - 1;
 
-    //nmobre de case vide en fin de tableau
-    $empty_end_cells = $last_day_of_selected_month + 1;
+    $tab_month = array();
 
-    $nb_cells_in_line = 1;
+    for($i=0; $i<$first_day_of_selected_month-1; $i++){
+        $tab_month [$i]=null;
+    }
 
-     
+    $d = 1;
+    for($i; $i<($nb_days_in_selected_month + $first_day_of_selected_month-1); $i++){
+        $tab_month [$i]= $d;
+        $d++;
+    }
+
+    for($i; $i<=34; $i++){
+        $tab_month [$i]= null;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -88,7 +95,6 @@
         <button type="submit" class="btn btn-link" data-mdb-ripple-color="dark">Afficher</button>
     </form>
 
-
     <!-- Création du tableau de base -->
     <table class="table table-bordered">
         <thead>
@@ -103,52 +109,32 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
             <?php
+                foreach($tab_month as $key => $value){
+                    if($key % 7 == 0){
+                        ?>
+                            <tr>
+                                <td><?=$value?></td>
 
-            // Création des cases vides du calendrier
-            for($i=0; $i < $empty_start_cells; $i++){
+                        <?php
+                    } else if(($key + 1) % 7 == 0){
+                        ?>
+                                <td><?=$value?></td>
+                            </tr>
+                    
+                        <?php
+                    } else{
+                        ?>
+                                <td><?=$value?></td>
+                        <?php
+                    }
+                }
             ?>
-                 <!-- on créé une cellule vide -->
-                <td class="bg-secondary"></td>
-            <?php 
-                $nb_cells_in_line++;
-            }
-            // Fin création des cases vides
-            
-            // Début de création des cases du mois en cours
-            for($days=1; $days <= $nb_days_in_selected_month; $days++){
-                // ajout de la condition pour les retours à la ligne en fin de semaine
-                if($nb_cells_in_line % 7 == 0){
-            ?>
-                    <td><?= $days; ?></td> 
-                </tr>
-                <tr>
-            <?php
-                    $nb_cells_in_line++;
-
-                } else{
-            ?>
-                    <td><?= $days; ?></td>
-            <?php
-                    $nb_cells_in_line++;
-                }                
-            }
-            // Fin de création des cases du mois en cours
-
-            //début création des cases vides fin de mois
-            for($empty_end_cells; $empty_end_cells <= 7; $empty_end_cells++){
-
-            ?>
-                <td class="bg-secondary"></td>
-            <?php
-            }
-            //fin création des cases vides fin de mois
-    
-            ?>
-            </tr>
         </tbody>
-    </table>
+
+
+
+
     <!-- MDB -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/2.2.1/mdb.min.js"></script>
 </body>
