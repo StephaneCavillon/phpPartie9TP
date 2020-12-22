@@ -35,9 +35,12 @@
         $d++;
     }
 
-    for($i; $i<=34; $i++){
+    for($j=$last_day_of_selected_month; $j <7 ; $j++){
         $tab_month [$i]= null;
+        $i++;
     }
+
+    var_dump($tab_month);
 ?>
 
 <!DOCTYPE html>
@@ -51,6 +54,9 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
     <!-- MDB -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/2.2.1/mdb.min.css" rel="stylesheet"/>
+    <!-- CSS perso -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
     <title>PHP - partie 9 - TP - méthode tableau</title>
 </head>
 <body class="container">
@@ -119,9 +125,13 @@
                         <?php
                     } else if(($key + 1) % 7 == 0){
                         ?>
-                                <td><?=$value?></td>
+                                <td class="bg-grey"><?=$value?></td>
                             </tr>
                     
+                        <?php
+                    } else if (($key + 2 ) % 7 ==0){
+                        ?>
+                                <td class="bg-grey"><?=$value?></td>    
                         <?php
                     } else{
                         ?>
